@@ -1,17 +1,22 @@
 from queue import Queue
 
 from biliapi_utils import wbi_sign
-from download import download_audio
+from downloader import download_audio
 
 from model import session, console
 
 
 def download(videos:Queue):
     next_video = videos.get()
-    console.print(f"正在下载{next_video}")
     if next_video == "STOP":
         return
+
+    console.print("")
+    console.print(f"正在下载{next_video}")
+
     cid, title = get_title_and_cid(next_video)
+    if cid is None:
+        return ""
 
     video_download_info = get_video_download_info(cid, next_video)
     if video_download_info is None:
@@ -22,15 +27,16 @@ def download(videos:Queue):
     try:
         download_audio(base_url, title, is_flac)
         return ""
-
     except Exception as ex:
         console.print(f"Failed to try download audio {next_video}", ex)
+
         for url in backup_url:
             try:
                 download_audio(url, title, is_flac)
                 break
             except Exception as e:
                 console.print(f"Failed to try download audio {next_video}", e)
+
         else:
             console.print(f"Failed to download audio {next_video}")
             return ""
@@ -67,8 +73,12 @@ def get_title_and_cid(next_video):
     raw_params = {"bvid": next_video}
     params = wbi_sign(raw_params)
     info = session.get(f"https://api.bilibili.com/x/web-interface/wbi/view", params=params).json()
-    title = info["data"]["title"]
-    cid = info["data"]["cid"]
+    try:
+        title = info["data"]["title"]
+        cid = info["data"]["cid"]
+    except KeyError:
+        console.print("BV号不正确")
+        return None, None
     return cid, title
 
 

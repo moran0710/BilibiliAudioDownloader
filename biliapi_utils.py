@@ -1,5 +1,4 @@
 import hashlib
-import os
 import urllib
 from time import time
 from urllib import parse
@@ -11,12 +10,9 @@ def wbi_sign(raw_params:dict):
     raw_params["wts"]=round(time())
     raw_params = dict(sorted(raw_params.items()))
     query = urllib.parse.urlencode(raw_params)
-    mixin_key = remake_key()
     sign = hashlib.md5((query+mixin_key).encode()).hexdigest()
     raw_params["w_rid"] = sign
     return raw_params
-
-
 
 def get_mixin_key():
 
@@ -41,3 +37,5 @@ def remake_key():
     for i in map_lst:
         result += raw[i]
     return result
+
+mixin_key = get_mixin_key()
