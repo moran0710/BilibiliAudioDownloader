@@ -37,8 +37,10 @@ def main():
     way = input(r"请选择使用单线程模式([s]single)\\多线程模式([t]thread)  default:[s]single"+"\n")+"   "
     if way[0] == "t":
         thread_download(videos)
+        return
 
     single_download(videos)
+
 
 
 class StopLoopException(Exception):
