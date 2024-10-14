@@ -6,7 +6,7 @@ from threading import Thread
 from rich.console import Console
 from rich.progress import track
 
-from model import console
+from model import console, session
 from single import download
 
 def get_bvid(raw_link:str):
@@ -18,7 +18,16 @@ def get_bvid(raw_link:str):
 
 def get_avid(raw_link:str):
     """从url或者其他来源获取AV号"""
-    return  re.search(r'(av.*?).{9}', raw_link).group(0)
+    raw_link = raw_link.replace("//", "/")
+    raw_links = raw_link.split("/")
+    for string in raw_links:
+        if "av" in string:
+            return string
+
+def translate_avid_2_bvid(raw_link:str):
+    avid = get_avid(raw_link)[2:]
+    resp = session.get("https://api.bilibili.com/x/web-interface/view", params={"aid": avid}).json()
+    return resp["data"]["bvid"]
 
 def main():
     try:
@@ -30,9 +39,12 @@ def main():
 
     videos = queue.Queue()
     for link in track(links,description="正在整理BVID...."):
-        if get_bvid(link) is None:
-            continue
-        videos.put(get_bvid(link))
+        bvid = get_bvid(link)
+        if bvid is None:
+            bvid = translate_avid_2_bvid(link)
+            if bvid is None:
+                continue
+        videos.put(bvid)
     videos.put("STOP")
     way = input(r"请选择使用单线程模式([s]single)\\多线程模式([t]thread)  default:[s]single"+"\n")+"   "
     if way[0] == "t":
