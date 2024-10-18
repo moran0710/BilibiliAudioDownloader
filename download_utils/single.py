@@ -1,6 +1,6 @@
 from queue import Queue
 
-from requests_utils.biliapi_utils import wbi_sign
+from biliapis.sign import wbi_sign
 from download_utils.downloader import download_audio
 from requests_utils.model import console, session
 

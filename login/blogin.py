@@ -12,7 +12,11 @@ def get_login_qrcode_data():
 def login():
     login_qrcode_data = get_login_qrcode_data()
     console.print("请扫描此二维码进行登录")
-    show_qrcode(login_qrcode_data)
+    try:
+        show_qrcode_as_img(login_qrcode_data)
+    except Exception as e:
+        show_qrcode_as_ascii(login_qrcode_data)
+
     is_login = check_login(login_qrcode_data)
     if is_login:
         console.print("正在保存cookie.....")
@@ -49,7 +53,13 @@ def check_login(login_qrcode_data:dict):
             console.print(resp)
             return False
 
-def show_qrcode(login_qrcode_data:dict):
+def show_qrcode_as_img(login_qrcode_data:dict):
     img = qrcode.make(login_qrcode_data["url"])
     img.save("login_qrcode.png")
     img.show()
+
+def show_qrcode_as_ascii(login_qrcode_data:dict):
+    img = qrcode.make(login_qrcode_data["url"])
+    qr = qrcode.main.QRCode()
+    qr.add_data(login_qrcode_data["url"])
+    qr.print_ascii()

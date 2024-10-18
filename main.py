@@ -2,10 +2,15 @@ import argparse
 import queue
 import re
 from concurrent.futures import ThreadPoolExecutor
+
+from pygments.lexers.sql import re_error
 from rich.progress import track
 
 from download_utils.single import download
+from get_favourite_videos.get_favourite import get_favourite_videos
+from get_seasons_archives.apis import get_seasons
 from login.blogin import login
+from login.exit_login import exit_login
 from requests_utils.model import session, console
 
 
@@ -35,6 +40,8 @@ def main_with_no_command_arg():
             links = f.readlines()
     except FileNotFoundError:
         console.print("没有找到links.txt，需要新建一个links.txt [请参阅readme.md]")
+        with open("links.txt", "w", encoding="utf-8") as f:
+            pass
         return
 
     videos = queue.Queue()
@@ -89,6 +96,9 @@ def single_download(videos):
             break
     console.print("下载完成")
 
+def re_exit():
+    input()
+    exit(0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = "Bilibili音频下载工具\n用于从B站爬取视频")
@@ -101,9 +111,24 @@ if __name__ == '__main__':
         main_with_no_command_arg()
 
     else:
-        way = input(r"请选择进入登录([l]login)\\下载模式([d]download))  default:[d]download"+"\n")+"   "
+        print("进入登录([l]login)\\下载模式([d]download)\\退出登录([e]exitlogin)")
+        print("从收藏夹生成links.txt([f]favourite_to_links)\\从视频合集生成links.txt([s]seasons_archives_to_links)")
+        # print("")
+        print()
+        way = input(r"请选择模式:  default:[d]download"+"\n")+"   "
         if way[0] == "l":
             login()
-            exit(0)
+            re_exit()
+        if way[0] == "e":
+            exit_login()
+            re_exit()
+        if way[0] == "f":
+            get_favourite_videos()
+            re_exit()
+        if way[0] == "s":
+            get_seasons()
+
         main_with_no_command_arg()
+        re_exit()
+
 
