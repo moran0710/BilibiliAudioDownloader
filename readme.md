@@ -18,6 +18,10 @@ python版本为3.12.4
 3. 运行`main.py`或者我打包的`BilibiliAudioDownloader.exe`，选择多线程模式或者单线程模式
 4. 你要下载的音频会出现在`result`文件夹下
 
+如果需要登录：
+1. 使用`python main.py login`
+2. 或者，双击打包好的exe，之后选择登录模式 `login`
+
 ## 2. 已知问题
 
 下载的视频标题中的`\`和`/`会被删除
