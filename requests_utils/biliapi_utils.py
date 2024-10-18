@@ -3,7 +3,8 @@ import urllib
 from time import time
 from urllib import parse
 
-from model import session
+from requests_utils.model import session
+
 
 def wbi_sign(raw_params:dict):
     raw_params = raw_params.copy()

@@ -1,13 +1,13 @@
+import argparse
 import queue
 import re
 from concurrent.futures import ThreadPoolExecutor
-from threading import Thread
-
-from rich.console import Console
 from rich.progress import track
 
-from model import console, session
-from single import download
+from download_utils.single import download
+from login.blogin import login
+from requests_utils.model import session, console
+
 
 def get_bvid(raw_link:str):
     """从url或者其他来源获取BV号"""
@@ -29,7 +29,7 @@ def translate_avid_2_bvid(raw_link:str):
     resp = session.get("https://api.bilibili.com/x/web-interface/view", params={"aid": avid}).json()
     return resp["data"]["bvid"]
 
-def main():
+def main_with_no_command_arg():
     try:
         with open("links.txt", "r", encoding="utf-8") as f:
             links = f.readlines()
@@ -91,5 +91,11 @@ def single_download(videos):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description = "Bilibili音频下载工具\n用于从B站爬取视频")
+    parser.add_argument("mode",type=str,help="工具使用的模式，login: 登录工具， down/download：下载模式，默认为下载模式", default="", const=0, nargs='?' )
+    args = parser.parse_args()
+    if args.mode == "login":
+        login()
+        exit(0)
+    main_with_no_command_arg()
 

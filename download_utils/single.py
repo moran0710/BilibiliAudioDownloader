@@ -1,9 +1,8 @@
 from queue import Queue
 
-from biliapi_utils import wbi_sign
-from downloader import download_audio
-
-from model import session, console
+from requests_utils.biliapi_utils import wbi_sign
+from download_utils.downloader import download_audio
+from requests_utils.model import console, session
 
 
 def download(videos:Queue):
