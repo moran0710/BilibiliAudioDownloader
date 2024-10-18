@@ -97,5 +97,13 @@ if __name__ == '__main__':
     if args.mode == "login":
         login()
         exit(0)
-    main_with_no_command_arg()
+    if args.mode == "download" or args.mode == "down":
+        main_with_no_command_arg()
+
+    else:
+        way = input(r"请选择进入登录([l]login)\\下载模式([d]download))  default:[d]download"+"\n")+"   "
+        if way[0] == "l":
+            login()
+            exit(0)
+        main_with_no_command_arg()
 
